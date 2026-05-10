@@ -29,7 +29,8 @@ CHAT_ID = 1365478870
 IST = pytz.timezone("Asia/Kolkata")
 BRIEFING_HOUR = 8    # 8:00 AM IST
 BRIEFING_MINUTE = 0
-DATA_FILE = "chief_data.json"
+SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+DATA_FILE = os.path.join(SCRIPT_DIR, "chief_data.json")
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -79,8 +80,8 @@ def ask_claude(user_message: str, data: dict) -> str:
         reply = response.choices[0].message.content
         data["chat_history"].append({"role": "user", "content": user_message})
         data["chat_history"].append({"role": "assistant", "content": reply})
-        if len(data["chat_history"]) > 30:
-            data["chat_history"] = data["chat_history"][-30:]
+        if len(data["chat_history"]) > 100:
+            data["chat_history"] = data["chat_history"][-100:]
         save_data(data)
         return reply
     except Exception as e:
@@ -254,6 +255,14 @@ def main():
     job_queue.run_daily(send_briefing, time=briefing_time, name="daily_briefing")
 
     logger.info("Chief of Staff bot is running...")
+
+    async def on_startup(app):
+        await app.bot.send_message(
+            chat_id=CHAT_ID,
+            text="Chief of Staff is back online. Your tasks and history are intact. Type /brief to continue."
+        )
+
+    app.post_init = on_startup
     app.run_polling()
 
 if __name__ == "__main__":
