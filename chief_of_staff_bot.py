@@ -69,7 +69,7 @@ Keep replies under 200 words. Use plain text, no markdown formatting (this is Te
 def ask_claude(user_message: str, data: dict) -> str:
     try:
         client = Groq(api_key=GROQ_API_KEY)
-        history = data.get("chat_history", [])[-10:]
+        history = data.get("chat_history", [])[-50:]
         context_msg = f"[Current data: {get_context(data)}]\n\n{user_message}"
         messages = [{"role": "system", "content": SYSTEM_PROMPT}] + history + [{"role": "user", "content": context_msg}]
         response = client.chat.completions.create(
@@ -80,8 +80,8 @@ def ask_claude(user_message: str, data: dict) -> str:
         reply = response.choices[0].message.content
         data["chat_history"].append({"role": "user", "content": user_message})
         data["chat_history"].append({"role": "assistant", "content": reply})
-        if len(data["chat_history"]) > 100:
-            data["chat_history"] = data["chat_history"][-100:]
+        if len(data["chat_history"]) > 5000:
+            data["chat_history"] = data["chat_history"][-5000:]
         save_data(data)
         return reply
     except Exception as e:
