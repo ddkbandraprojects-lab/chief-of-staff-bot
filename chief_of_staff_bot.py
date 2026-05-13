@@ -11,11 +11,16 @@ Features:
 """
 
 import os
+from dotenv import load_dotenv
 import json
 import base64
 import logging
 from datetime import datetime, time
 import pytz
+
+# Load .env file
+SCRIPT_DIR_TEMP = os.path.dirname(os.path.abspath(__file__))
+load_dotenv(os.path.join(SCRIPT_DIR_TEMP, ".env"))
 from groq import Groq
 from telegram import Update
 from telegram.ext import (
@@ -24,8 +29,8 @@ from telegram.ext import (
 )
 
 # ─── CONFIG ───────────────────────────────────────────────────────────────────
-TELEGRAM_TOKEN = os.environ.get("TELEGRAM_TOKEN", "8435492336:AAH3pAPnfVG-5j2Uou0BuIJWgSNuWHavwEE")
-GROQ_API_KEY = os.environ.get("GROQ_API_KEY", "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")
+TELEGRAM_TOKEN = os.environ.get("TELEGRAM_TOKEN", "")
+GROQ_API_KEY = os.environ.get("GROQ_API_KEY", "")
 CHAT_ID = 1365478870
 IST = pytz.timezone("Asia/Kolkata")
 BRIEFING_HOUR = 8
